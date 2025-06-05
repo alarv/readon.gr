@@ -78,7 +78,7 @@ export default function Home() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-6">
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+        <h1 className="text-2xl font-bold text-foreground mb-6">
           Τελευταίες αναρτήσεις
         </h1>
         
