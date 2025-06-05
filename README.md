@@ -1,36 +1,142 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# readon.gr
+
+A modern Greek community platform featuring posts, comments, voting system, and AI-powered moderation.
+
+## Features
+
+- 📱 Modern, responsive design
+- 🔐 User authentication with Supabase
+- 📝 Text, link, and image posts
+- 💬 Threaded comments system
+- ⬆️⬇️ Democratic voting (upvotes/downvotes)
+- 🤖 AI-powered content moderation
+- 🇬🇷 Greek language support
+
+## Tech Stack
+
+- **Frontend & Backend**: Next.js 15 (App Router)
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Styling**: Tailwind CSS
+- **UI Components**: Radix UI
+- **Language**: TypeScript
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ 
+- npm or yarn
+- Supabase account
+
+### Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/readon.gr.git
+cd readon.gr
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.local.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Edit `.env.local` with your Supabase credentials:
+```
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+```
 
-## Learn More
+4. Set up the database:
+   - Go to your Supabase project dashboard
+   - Navigate to SQL Editor
+   - Run the SQL script from `database/schema.sql`
 
-To learn more about Next.js, take a look at the following resources:
+5. Start the development server:
+```bash
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Database Schema
 
-## Deploy on Vercel
+The application uses the following main tables:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **profiles**: User profiles extending Supabase auth
+- **posts**: Text, link, and image posts
+- **comments**: Threaded comments with depth tracking
+- **votes**: User votes on posts and comments
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Development
+
+### Available Scripts
+
+- `npm run dev` - Start development server with Turbopack
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+
+### Project Structure
+
+```
+src/
+├── app/                 # Next.js app router pages
+├── components/          # React components
+│   ├── layout/         # Layout components (header, footer)
+│   ├── post/           # Post-related components
+│   └── ui/             # Reusable UI components
+├── lib/                # Utilities and configuration
+│   ├── supabase.ts     # Supabase client setup
+│   ├── types.ts        # TypeScript type definitions
+│   └── utils.ts        # Utility functions
+database/
+└── schema.sql          # Database schema and policies
+```
+
+## Features Roadmap
+
+### MVP (Current Phase)
+- [x] Basic project setup
+- [x] Database schema
+- [x] UI components and layout
+- [ ] User authentication
+- [ ] Post creation and display
+- [ ] Voting system
+- [ ] Comment system
+
+### Phase 2
+- [ ] User profiles
+- [ ] Communities/subreddits
+- [ ] Image upload
+- [ ] Search functionality
+- [ ] Real-time notifications
+
+### Phase 3
+- [ ] AI moderation system
+- [ ] Content filtering
+- [ ] Spam detection
+- [ ] Advanced analytics
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For support, create an issue on GitHub.
