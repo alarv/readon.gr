@@ -1,4 +1,4 @@
--- Supabase database schema for readon.gr Reddit clone
+-- Supabase database schema for readon.gr
 
 -- Users table (extends Supabase auth.users)
 CREATE TABLE public.profiles (
