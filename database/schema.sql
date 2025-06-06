@@ -62,6 +62,20 @@ CREATE TABLE public.votes (
   CHECK ((post_id IS NOT NULL AND comment_id IS NULL) OR (post_id IS NULL AND comment_id IS NOT NULL))
 );
 
+-- Reports table (for moderation)
+CREATE TABLE public.reports (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  reporter_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
+  post_id UUID REFERENCES public.posts(id) ON DELETE CASCADE,
+  comment_id UUID REFERENCES public.comments(id) ON DELETE CASCADE,
+  reason TEXT NOT NULL CHECK (reason IN ('spam', 'harassment', 'inappropriate', 'misinformation', 'other')),
+  description TEXT,
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'reviewed', 'resolved', 'dismissed')),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CHECK ((post_id IS NOT NULL AND comment_id IS NULL) OR (post_id IS NULL AND comment_id IS NOT NULL))
+);
+
 -- Indexes for performance
 CREATE INDEX idx_posts_created_at ON public.posts(created_at DESC);
 CREATE INDEX idx_posts_author_id ON public.posts(author_id);
@@ -71,12 +85,16 @@ CREATE INDEX idx_comments_parent_id ON public.comments(parent_id);
 CREATE INDEX idx_votes_user_id ON public.votes(user_id);
 CREATE INDEX idx_votes_post_id ON public.votes(post_id);
 CREATE INDEX idx_votes_comment_id ON public.votes(comment_id);
+CREATE INDEX idx_reports_status ON public.reports(status);
+CREATE INDEX idx_reports_post_id ON public.reports(post_id);
+CREATE INDEX idx_reports_comment_id ON public.reports(comment_id);
 
 -- Row Level Security Policies
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.votes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reports ENABLE ROW LEVEL SECURITY;
 
 -- Profiles policies
 CREATE POLICY "Public profiles are viewable by everyone" ON public.profiles
@@ -120,6 +138,13 @@ CREATE POLICY "Users can update own votes" ON public.votes
 
 CREATE POLICY "Users can delete own votes" ON public.votes
   FOR DELETE USING (auth.uid() = user_id);
+
+-- Reports policies
+CREATE POLICY "Reports are viewable by moderators" ON public.reports
+  FOR SELECT USING (true); -- For now, all authenticated users can see reports
+
+CREATE POLICY "Authenticated users can create reports" ON public.reports
+  FOR INSERT WITH CHECK (auth.role() = 'authenticated');
 
 -- Functions for updating vote counts
 CREATE OR REPLACE FUNCTION update_post_vote_counts()
