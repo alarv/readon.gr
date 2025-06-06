@@ -160,5 +160,4 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER trigger_update_post_votes
   AFTER INSERT OR UPDATE OR DELETE ON public.votes
   FOR EACH ROW
-  WHEN (OLD.post_id IS NOT NULL OR NEW.post_id IS NOT NULL)
   EXECUTE FUNCTION update_post_vote_counts();
