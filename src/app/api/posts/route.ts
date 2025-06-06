@@ -21,9 +21,9 @@ const getServiceSupabaseClient = () => {
 // Cached function to fetch posts from database with different cache strategies per sort
 const getCachedPosts = (sort: string) => {
   const cacheOptions = {
-    'new': { tags: ['posts', 'posts-new'], revalidate: 3600 }, // 1 hour for new posts
-    'top': { tags: ['posts', 'posts-top'], revalidate: 1800 }, // 30 min for top (vote-dependent)
-    'hot': { tags: ['posts', 'posts-hot'], revalidate: 900 }   // 15 min for hot (vote + time dependent)
+    'new': { tags: ['posts', 'posts-new'], revalidate: 3600 }, // 1 hour for new posts (ordering doesn't change)
+    'top': { tags: ['posts', 'posts-top'], revalidate: 3600 }, // 1 hour (we fetch counts separately)
+    'hot': { tags: ['posts', 'posts-hot'], revalidate: 1800 }  // 30 min for hot (time-dependent scoring)
   }
   
   return unstable_cache(

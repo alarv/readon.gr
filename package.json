@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:push": "supabase db push",
+    "db:reset": "supabase db reset",
+    "db:migrations": "supabase migration list",
+    "storage:setup": "echo 'Run scripts/setup-storage.sql in your Supabase SQL Editor'"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",

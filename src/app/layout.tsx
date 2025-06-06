@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 
 const geistSans = Geist({
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "readon.gr",
-  description: "Modern Greek community platform",
+  title: "Readon.gr | Το ελληνικό δημοκρατικό forum",
+  description: "Το σύγχρονο ελληνικό κοινοτικό forum με δημοκρατική διαχείριση",
   icons: {
     icon: "/favicon.ico",
   },
@@ -42,6 +43,7 @@ export default function RootLayout({
           <main className="min-h-screen">
             {children}
           </main>
+          <Footer />
         </ThemeProvider>
       </body>
     </html>
