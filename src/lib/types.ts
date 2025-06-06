@@ -74,3 +74,26 @@ export interface CreateCommentData {
   post_id: string;
   parent_id?: string;
 }
+
+export interface Report {
+  id: string;
+  reporter_id: string;
+  post_id?: string;
+  comment_id?: string;
+  reason: 'spam' | 'harassment' | 'inappropriate' | 'misinformation' | 'other';
+  description?: string;
+  status: 'pending' | 'reviewed' | 'resolved' | 'dismissed';
+  created_at: string;
+  updated_at: string;
+  // Relations
+  reporter?: Profile;
+  post?: Post;
+  comment?: Comment;
+}
+
+export interface CreateReportData {
+  post_id?: string;
+  comment_id?: string;
+  reason: 'spam' | 'harassment' | 'inappropriate' | 'misinformation' | 'other';
+  description?: string;
+}
