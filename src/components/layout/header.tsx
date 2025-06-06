@@ -19,29 +19,13 @@ export function Header() {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
-      
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single()
-        setProfile(profile)
-      }
     }
     
     getUser()
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null)
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single()
-        setProfile(profile)
-      } else {
+      if (!session?.user) {
         setProfile(null)
       }
     })
@@ -49,9 +33,63 @@ export function Header() {
     return () => subscription.unsubscribe()
   }, [supabase])
 
+  // Fetch or create profile when user changes
+  useEffect(() => {
+    if (user && !profile) {
+      const fetchOrCreateProfile = async () => {
+        // First try to fetch existing profile
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        
+        if (!profile) {
+          // Create profile if it doesn't exist
+          const { data: newProfile } = await supabase
+            .from('profiles')
+            .insert({
+              id: user.id,
+              username: user.email?.split('@')[0] || `user_${user.id.slice(0, 8)}`,
+            })
+            .select()
+            .single()
+          
+          if (newProfile) {
+            setProfile(newProfile)
+          }
+        } else {
+          setProfile(profile)
+        }
+      }
+      fetchOrCreateProfile()
+    }
+  }, [user, profile, supabase])
+
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    window.location.href = '/'
+    try {
+      console.log('Signing out...')
+      
+      // Add timeout to prevent hanging
+      const signOutPromise = supabase.auth.signOut()
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 3000)
+      )
+      
+      const { error } = await Promise.race([signOutPromise, timeoutPromise]) as any
+      
+      if (error) {
+        console.error('Sign out error:', error)
+      } else {
+        console.log('Sign out successful')
+      }
+    } catch (error) {
+      console.error('Sign out failed:', error)
+    } finally {
+      // Always redirect regardless of success/failure
+      console.log('Redirecting to home...')
+      window.location.href = '/'
+    }
   }
 
   return (
