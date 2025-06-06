@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-menubar": "^1.1.15",
     "@radix-ui/react-separator": "^1.1.7",
@@ -33,6 +34,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "supabase": "^2.24.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
