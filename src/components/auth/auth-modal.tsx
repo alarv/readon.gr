@@ -3,6 +3,13 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -57,14 +64,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
   }
 
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg w-96">
-        <h2 className="text-xl font-bold mb-4">
-          {isSignUp ? 'Εγγραφή' : 'Σύνδεση'}
-        </h2>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>
+            {isSignUp ? 'Εγγραφή' : 'Σύνδεση'}
+          </DialogTitle>
+        </DialogHeader>
         
         <form onSubmit={handleAuth} className="space-y-4">
           {isSignUp && (
@@ -105,24 +112,28 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </Button>
         </form>
         
-        <p className="mt-4 text-center">
-          {isSignUp ? 'Έχετε ήδη λογαριασμό;' : 'Δεν έχετε λογαριασμό;'}
-          <button
-            onClick={() => setIsSignUp(!isSignUp)}
-            className="ml-1 text-blue-500 hover:underline"
+        <DialogFooter className="flex-col space-y-2">
+          <p className="text-center text-sm">
+            {isSignUp ? 'Έχετε ήδη λογαριασμό;' : 'Δεν έχετε λογαριασμό;'}
+            <button
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="ml-1 text-blue-500 hover:underline"
+            >
+              {isSignUp ? 'Σύνδεση' : 'Εγγραφή'}
+            </button>
+          </p>
+          
+          <Button
+            type="button"
+            onClick={onClose}
+            variant="outline"
+            className="w-full"
           >
-            {isSignUp ? 'Σύνδεση' : 'Εγγραφή'}
-          </button>
-        </p>
-        
-        <Button
-          onClick={onClose}
-          variant="outline"
-          className="w-full mt-4"
-        >
-          Ακύρωση
-        </Button>
-      </div>
-    </div>
+            Ακύρωση
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
