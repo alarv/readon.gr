@@ -1,16 +1,19 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowUpIcon, ArrowDownIcon, MessageCircleIcon, ExternalLinkIcon } from "lucide-react"
+import { ArrowUpIcon, ArrowDownIcon, MessageCircleIcon, ExternalLinkIcon, FlagIcon } from "lucide-react"
 import { Post } from "@/lib/types"
 import { formatTimeAgo, formatNumber, cn } from "@/lib/utils"
+import { ReportModal } from "@/components/moderation/report-modal"
 
 interface PostCardProps {
   post: Post
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const [showReportModal, setShowReportModal] = useState(false)
   const netScore = post.upvotes - post.downvotes
 
   return (
@@ -35,7 +38,9 @@ export function PostCard({ post }: PostCardProps) {
         {/* Content section */}
         <div className="flex-1 p-4">
           <div className="flex items-center text-xs text-muted-foreground mb-2">
-            <span>r/{post.community}</span>
+            <Link href={`/c/${post.community}`} className="hover:text-primary">
+              c/{post.community}
+            </Link>
             <span className="mx-1">•</span>
             <span>Posted by u/{post.author?.username || 'unknown'}</span>
             <span className="mx-1">•</span>
@@ -75,14 +80,30 @@ export function PostCard({ post }: PostCardProps) {
             </div>
           )}
 
-          <div className="flex items-center space-x-4 text-muted-foreground text-sm">
-            <Link href={`/post/${post.id}`} className="flex items-center hover:text-card-foreground">
-              <MessageCircleIcon className="h-4 w-4 mr-1" />
-              {post.comment_count} comments
-            </Link>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4 text-muted-foreground text-sm">
+              <Link href={`/post/${post.id}`} className="flex items-center hover:text-card-foreground">
+                <MessageCircleIcon className="h-4 w-4 mr-1" />
+                {post.comment_count} comments
+              </Link>
+            </div>
+            
+            <button 
+              onClick={() => setShowReportModal(true)}
+              className="flex items-center text-muted-foreground hover:text-red-500 text-sm p-1 rounded"
+              title="Αναφορά"
+            >
+              <FlagIcon className="h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>
+      
+      <ReportModal 
+        isOpen={showReportModal}
+        onClose={() => setShowReportModal(false)}
+        postId={post.id}
+      />
     </div>
   )
 }
