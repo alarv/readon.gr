@@ -6,6 +6,12 @@ import { createClient } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { CreatePostData } from '@/lib/types'
 
+interface LinkPreview {
+  siteName: string;
+  description: string;
+  image: string, title: string
+}
+
 export function PostForm() {
   const [postType, setPostType] = useState<'text' | 'link' | 'image'>('text')
   const [title, setTitle] = useState('')
@@ -15,12 +21,12 @@ export function PostForm() {
   const [community, setCommunity] = useState('general')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [linkPreview, setLinkPreview] = useState<any>(null)
+  const [linkPreview, setLinkPreview] = useState<LinkPreview | null>(null)
   const [loadingPreview, setLoadingPreview] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
-  
+
   const router = useRouter()
   const supabase = createClient()
 
@@ -42,7 +48,7 @@ export function PostForm() {
       if (response.ok) {
         const metadata = await response.json()
         setLinkPreview(metadata)
-        
+
         // Auto-fill title if empty
         if (!title.trim() && metadata.title) {
           setTitle(metadata.title)
@@ -59,7 +65,7 @@ export function PostForm() {
     const file = event.target.files?.[0]
     if (file) {
       setSelectedFile(file)
-      
+
       // Create preview
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -72,17 +78,17 @@ export function PostForm() {
   const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData()
     formData.append('file', file)
-    
+
     const response = await fetch('/api/upload', {
       method: 'POST',
       body: formData,
     })
-    
+
     if (!response.ok) {
       const errorData = await response.json()
       throw new Error(errorData.error || 'Failed to upload image')
     }
-    
+
     const data = await response.json()
     return data.url
   }
@@ -90,8 +96,8 @@ export function PostForm() {
   // Debounced effect for URL preview
   useEffect(() => {
     if (postType === 'link' && url.trim()) {
-      const timer = setTimeout(() => {
-        fetchPreview(url)
+      const timer = setTimeout(async () => {
+        await fetchPreview(url)
       }, 1000) // 1 second delay
 
       return () => clearTimeout(timer)
@@ -153,7 +159,7 @@ export function PostForm() {
         postData.url = url.trim()
       } else if (postType === 'image') {
         let finalImageUrl = imageUrl.trim()
-        
+
         // If user selected a file, upload it first
         if (selectedFile) {
           setUploadingImage(true)
@@ -167,16 +173,16 @@ export function PostForm() {
           }
           setUploadingImage(false)
         }
-        
+
         postData.image_url = finalImageUrl
       }
 
       console.log('Sending post data:', postData)
-      
+
       // Add timeout to prevent hanging
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
-      
+
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: {
@@ -185,7 +191,7 @@ export function PostForm() {
         body: JSON.stringify(postData),
         signal: controller.signal,
       })
-      
+
       clearTimeout(timeoutId)
 
       console.log('Response status:', response.status)
@@ -198,7 +204,7 @@ export function PostForm() {
 
       const createdPost = await response.json()
       console.log('Created post:', createdPost)
-      
+
       // Redirect to the created post
       router.push(`/post/${createdPost.id}`)
       router.refresh()
@@ -333,7 +339,7 @@ export function PostForm() {
               className="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
-            
+
             {/* Loading indicator */}
             {loadingPreview && (
               <div className="mt-3 p-3 border rounded-md bg-gray-50 dark:bg-gray-800">
@@ -343,15 +349,15 @@ export function PostForm() {
                 </div>
               </div>
             )}
-            
+
             {/* Link preview */}
             {linkPreview && !loadingPreview && (
               <div className="mt-3 p-3 border rounded-md bg-gray-50 dark:bg-gray-800">
                 <div className="flex space-x-3">
                   {linkPreview.image && (
-                    <img 
-                      src={linkPreview.image} 
-                      alt="Preview" 
+                    <img
+                      src={linkPreview.image}
+                      alt="Preview"
                       className="w-20 h-20 object-cover rounded flex-shrink-0"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = 'none'
@@ -396,9 +402,9 @@ export function PostForm() {
             {imagePreview && (
               <div className="border rounded-md p-3 bg-gray-50 dark:bg-gray-800">
                 <p className="text-sm font-medium mb-2">Προεπισκόπηση:</p>
-                <img 
-                  src={imagePreview} 
-                  alt="Preview" 
+                <img
+                  src={imagePreview}
+                  alt="Preview"
                   className="max-w-full h-auto max-h-64 rounded border"
                 />
               </div>
@@ -440,7 +446,7 @@ export function PostForm() {
           >
             {uploadingImage ? 'Μεταφόρτωση εικόνας...' : loading ? 'Δημιουργία...' : 'Δημιουργία Post'}
           </Button>
-          
+
           <Button
             type="button"
             variant="outline"

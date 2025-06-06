@@ -4,7 +4,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server'
 export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabaseClient()
-    
+
     // Check authentication
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
 
     const formData = await request.formData()
     const file = formData.get('file') as File
-    
+
     if (!file) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
@@ -21,16 +21,16 @@ export async function POST(request: Request) {
     // Validate file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json({ 
-        error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.' 
+      return NextResponse.json({
+        error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.'
       }, { status: 400 })
     }
 
     // Validate file size (5MB limit)
     const maxSize = 5 * 1024 * 1024 // 5MB
     if (file.size > maxSize) {
-      return NextResponse.json({ 
-        error: 'File too large. Maximum size is 5MB.' 
+      return NextResponse.json({
+        error: 'File too large. Maximum size is 5MB.'
       }, { status: 400 })
     }
 
@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     const buffer = new Uint8Array(arrayBuffer)
 
     // Upload to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('images')
       .upload(fileName, buffer, {
         contentType: file.type,
@@ -54,8 +54,8 @@ export async function POST(request: Request) {
 
     if (uploadError) {
       console.error('Upload error:', uploadError)
-      return NextResponse.json({ 
-        error: 'Failed to upload image' 
+      return NextResponse.json({
+        error: 'Failed to upload image'
       }, { status: 500 })
     }
 
@@ -64,15 +64,15 @@ export async function POST(request: Request) {
       .from('images')
       .getPublicUrl(fileName)
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       url: publicUrl,
-      fileName: fileName 
+      fileName: fileName
     })
 
   } catch (error) {
     console.error('Upload API error:', error)
-    return NextResponse.json({ 
-      error: 'Internal server error' 
+    return NextResponse.json({
+      error: 'Internal server error'
     }, { status: 500 })
   }
 }

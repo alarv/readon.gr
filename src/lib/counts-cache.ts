@@ -1,5 +1,3 @@
-import React from 'react'
-
 // Client-side vote counts caching for better performance
 interface PostCounts {
   upvotes: number
@@ -30,7 +28,7 @@ class PostCountsCache {
       const cached = localStorage.getItem(CACHE_KEY)
       if (cached) {
         const data: CountsCacheWithTimestamp = JSON.parse(cached)
-        
+
         // Check if cache is not expired
         if (Date.now() - data.timestamp < CACHE_DURATION) {
           this.cache = data.counts
