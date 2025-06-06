@@ -91,6 +91,19 @@ export async function POST(request: Request) {
   try {
     const supabase = await createServerSupabaseClient()
     
+    // Get the authorization header and set it for the request
+    const authHeader = request.headers.get('authorization')
+    if (authHeader) {
+      // Extract token from Bearer token
+      const token = authHeader.replace('Bearer ', '')
+      if (token) {
+        await supabase.auth.setSession({
+          access_token: token,
+          refresh_token: ''
+        })
+      }
+    }
+    
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

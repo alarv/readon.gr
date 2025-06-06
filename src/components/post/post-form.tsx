@@ -121,6 +121,7 @@ export function PostForm() {
       }
 
       console.log('Creating post for user:', user.id)
+      console.log('User session:', user)
 
       // Validate required fields
       if (!title.trim()) {
@@ -183,10 +184,15 @@ export function PostForm() {
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
 
+      // Get the current session for the API call
+      const { data: { session } } = await supabase.auth.getSession()
+      console.log('Current session:', session)
+
       const response = await fetch('/api/posts', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`,
         },
         body: JSON.stringify(postData),
         signal: controller.signal,
