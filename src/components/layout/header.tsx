@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { AuthModal } from "@/components/auth/auth-modal"
 import { PlusIcon, UserIcon, LogOutIcon } from "lucide-react"
 import { createClient } from "@/lib/supabase"
@@ -96,7 +95,6 @@ export function Header() {
               </Button>
             )}
             
-            <ThemeToggle />
           </div>
         </div>
       </div>

@@ -10,16 +10,22 @@ export function formatTimeAgo(date: string): string {
   const posted = new Date(date)
   const diffMs = now.getTime() - posted.getTime()
   
+  const seconds = Math.floor(diffMs / 1000)
   const minutes = Math.floor(diffMs / (1000 * 60))
   const hours = Math.floor(diffMs / (1000 * 60 * 60))
   const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const months = Math.floor(days / 30)
   
-  if (minutes < 60) {
-    return `${minutes}m ago`
+  if (seconds < 60) {
+    return 'τώρα'
+  } else if (minutes < 60) {
+    return `${minutes}λ πριν`
   } else if (hours < 24) {
-    return `${hours}h ago`
+    return `${hours}ω πριν`
+  } else if (days < 30) {
+    return `${days}μ πριν`
   } else {
-    return `${days}d ago`
+    return `${months}μήν πριν`
   }
 }
 
