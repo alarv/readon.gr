@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
+import { revalidateTag } from 'next/cache'
 
 export async function POST(request: Request) {
   try {
