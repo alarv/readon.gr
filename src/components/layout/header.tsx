@@ -20,9 +20,9 @@ export function Header() {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
     }
-    
+
     getUser()
-    
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null)
       if (!session?.user) {
@@ -43,7 +43,7 @@ export function Header() {
           .select('*')
           .eq('id', user.id)
           .single()
-        
+
         if (!profile) {
           // Create profile if it doesn't exist
           const { data: newProfile } = await supabase
@@ -54,7 +54,7 @@ export function Header() {
             })
             .select()
             .single()
-          
+
           if (newProfile) {
             setProfile(newProfile)
           }
@@ -69,15 +69,9 @@ export function Header() {
   const handleSignOut = async () => {
     try {
       console.log('Signing out...')
-      
-      // Add timeout to prevent hanging
-      const signOutPromise = supabase.auth.signOut()
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 3000)
-      )
-      
-      const { error } = await Promise.race([signOutPromise, timeoutPromise]) as any
-      
+
+      const { error } = await supabase.auth.signOut()
+
       if (error) {
         console.error('Sign out error:', error)
       } else {
@@ -98,17 +92,17 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
-              <Image 
-                src="/logo.svg" 
-                alt="readon.gr" 
-                width={160} 
+              <Image
+                src="/logo.svg"
+                alt="readon.gr"
+                width={160}
                 height={32}
                 className="h-8 w-auto"
                 priority
               />
             </Link>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             {user && (
               <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
@@ -118,7 +112,7 @@ export function Header() {
                 </Link>
               </Button>
             )}
-            
+
             {user ? (
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-medium">{profile?.username}</span>
@@ -133,11 +127,11 @@ export function Header() {
                 Σύνδεση
               </Button>
             )}
-            
+
           </div>
         </div>
       </div>
-      
+
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </header>
   )
